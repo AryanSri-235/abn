@@ -142,7 +142,7 @@ export const AdminModal: React.FC = () => {
 
   return (
     <div className="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-xs flex items-center justify-center p-3 sm:p-6 overflow-y-auto">
-      <div className="bg-white border border-slate-300 rounded-xl max-w-4xl w-full max-h-[90vh] flex flex-col shadow-2xl">
+      <div className="bg-white border border-slate-300 rounded-xl max-w-4xl w-full max-h-[90vh] flex flex-col shadow-2xl overflow-hidden min-h-0">
         
         {/* Modal Header */}
         <div className="bg-slate-900 text-white p-4 flex items-center justify-between border-b border-slate-800 rounded-t-xl">
@@ -223,7 +223,7 @@ export const AdminModal: React.FC = () => {
         </div>
 
         {/* Tab Content Container */}
-        <div className="p-6 overflow-y-auto flex-1">
+        <div className="p-6 overflow-y-auto flex-1 min-h-0 overscroll-contain">
           
           {/* TAB 1: Company Info */}
           {activeTab === 'company' && (

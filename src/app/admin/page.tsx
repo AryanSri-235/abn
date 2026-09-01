@@ -592,8 +592,9 @@ function AdminContent() {
             {/* Product Edit Modal */}
             {editingProd && (
               <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4 z-50 overflow-y-auto">
-                <div className="bg-white rounded-2xl max-w-2xl w-full p-5 sm:p-6 space-y-4 my-8 border border-slate-200 shadow-2xl">
-                  <div className="flex items-center justify-between border-b pb-3">
+                <div className="bg-white rounded-2xl max-w-2xl w-full max-h-[90vh] overflow-hidden border border-slate-200 shadow-2xl my-8">
+                  <div className="p-5 sm:p-6 space-y-4 overflow-y-auto max-h-[calc(90vh-3rem)]">
+                    <div className="flex items-center justify-between border-b pb-3">
                     <h3 className="font-bold text-base text-slate-900">Edit Product: {editingProd.title}</h3>
                     <button onClick={() => setEditingProd(null)} className="text-slate-400 hover:text-slate-700">
                       <X className="w-5 h-5" />
@@ -768,22 +769,23 @@ function AdminContent() {
                     </div>
                   </div>
 
-                  <div className="flex justify-end gap-2 pt-3 border-t border-slate-200">
-                    <button
-                      onClick={() => setEditingProd(null)}
-                      className="px-4 py-2 border border-slate-300 rounded text-xs font-semibold hover:bg-slate-50"
-                    >
-                      Cancel
-                    </button>
-                    <button
-                      onClick={() => {
-                        updateProduct(editingProd.id, editingProd);
-                        setEditingProd(null);
-                      }}
-                      className="px-4 py-2 bg-[#383a7c] hover:bg-[#2c2e63] text-white rounded text-xs font-bold flex items-center gap-1.5 shadow-xs transition"
-                    >
-                      <Save className="w-3.5 h-3.5" /> Save Changes
-                    </button>
+                    <div className="flex justify-end gap-2 pt-3 border-t border-slate-200">
+                      <button
+                        onClick={() => setEditingProd(null)}
+                        className="px-4 py-2 border border-slate-300 rounded text-xs font-semibold hover:bg-slate-50"
+                      >
+                        Cancel
+                      </button>
+                      <button
+                        onClick={() => {
+                          updateProduct(editingProd.id, editingProd);
+                          setEditingProd(null);
+                        }}
+                        className="px-4 py-2 bg-[#383a7c] hover:bg-[#2c2e63] text-white rounded text-xs font-bold flex items-center gap-1.5 shadow-xs transition"
+                      >
+                        <Save className="w-3.5 h-3.5" /> Save Changes
+                      </button>
+                    </div>
                   </div>
                 </div>
               </div>
