@@ -7,9 +7,10 @@ import { ChevronRight, ChevronDown, ChevronUp } from 'lucide-react';
 
 interface ProductsSectionProps {
   searchQuery: string;
+  setActiveSection: (section: string) => void;
 }
 
-export const ProductsSection: React.FC<ProductsSectionProps> = ({ searchQuery }) => {
+export const ProductsSection: React.FC<ProductsSectionProps> = ({ searchQuery, setActiveSection }) => {
   const { data, setInquiryProduct } = useData();
   const { products } = data;
 
@@ -102,7 +103,12 @@ export const ProductsSection: React.FC<ProductsSectionProps> = ({ searchQuery })
           )}
 
           <button
-            onClick={() => setInquiryProduct(products[0] || null)}
+            onClick={() => {
+              setActiveSection('products');
+              if (typeof window !== 'undefined') {
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+              }
+            }}
             className="border-2 border-teal-600 text-teal-700 hover:bg-teal-50 font-bold text-xs sm:text-sm px-8 py-3 rounded-md transition shadow-2xs"
           >
             View Complete Range

@@ -45,7 +45,7 @@ export default function Home() {
             <>
               <Hero />
               <AboutSection />
-              <ProductsSection searchQuery={searchQuery} />
+              <ProductsSection searchQuery={searchQuery} setActiveSection={setActiveSection} />
               <HsnSection />
               <RatingsSection />
               <ContactSection />
