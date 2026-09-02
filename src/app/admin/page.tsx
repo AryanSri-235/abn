@@ -66,6 +66,16 @@ function AdminContent() {
   const [specKey, setSpecKey] = useState('');
   const [specVal, setSpecVal] = useState('');
 
+  // Notification Toast State
+  const [notification, setNotification] = useState<{ message: string; type: 'success' | 'info' | 'danger' } | null>(null);
+
+  const showConfirmation = (message: string, type: 'success' | 'info' | 'danger' = 'success') => {
+    setNotification({ message, type });
+    setTimeout(() => {
+      setNotification(null);
+    }, 4500);
+  };
+
   // Check Session
   useEffect(() => {
     const authStatus = sessionStorage.getItem('abn_admin_authenticated');
@@ -227,6 +237,27 @@ function AdminContent() {
 
       {/* Main Container */}
       <div className="flex-1 max-w-7xl w-full mx-auto p-4 sm:p-6 lg:p-8 flex flex-col gap-6">
+
+        {/* Global Confirmation Alert Banner */}
+        {notification && (
+          <div className={`p-4 rounded-xl border flex items-center justify-between shadow-lg transition-all animate-in fade-in slide-in-from-top-3 duration-300 ${
+            notification.type === 'success' 
+              ? 'bg-emerald-50 border-emerald-300 text-emerald-900' 
+              : notification.type === 'danger'
+              ? 'bg-red-50 border-red-300 text-red-900'
+              : 'bg-blue-50 border-blue-300 text-blue-900'
+          }`}>
+            <div className="flex items-center gap-3 font-bold text-xs sm:text-sm">
+              <CheckCircle className={`w-5 h-5 shrink-0 ${
+                notification.type === 'danger' ? 'text-red-600' : notification.type === 'info' ? 'text-blue-600' : 'text-emerald-600'
+              }`} />
+              <span>{notification.message}</span>
+            </div>
+            <button onClick={() => setNotification(null)} className="text-slate-400 hover:text-slate-700 p-1">
+              <X className="w-4 h-4" />
+            </button>
+          </div>
+        )}
         
         {/* Responsive Tab Bar */}
         <div className="flex items-center gap-2 overflow-x-auto border-b border-slate-300 pb-3 scrollbar-none">
@@ -490,6 +521,7 @@ function AdminContent() {
                   <button
                     onClick={() => {
                       if (newProd.title && newProd.category) {
+                        const addedTitle = newProd.title;
                         addProduct({
                           title: newProd.title || '',
                           category: newProd.category || '',
@@ -503,6 +535,7 @@ function AdminContent() {
                           specifications: newProd.specifications || {}
                         });
                         setIsAddProdOpen(false);
+                        showConfirmation(`Product "${addedTitle}" saved & published successfully!`);
                         setNewProd({
                           title: '',
                           category: 'Electric Heater',
@@ -553,7 +586,11 @@ function AdminContent() {
                         <td className="p-3 text-slate-500 whitespace-nowrap">{prod.minimumOrderQuantity}</td>
                         <td className="p-3 whitespace-nowrap">
                           <button
-                            onClick={() => updateProduct(prod.id, { available: prod.available === false })}
+                            onClick={() => {
+                              const newStatus = prod.available === false;
+                              updateProduct(prod.id, { available: newStatus });
+                              showConfirmation(`Product "${prod.title}" availability status changed to ${newStatus ? 'In Stock ✓' : 'Out of Stock ✕'}.`);
+                            }}
                             className={`px-2.5 py-1 rounded text-[10px] font-bold cursor-pointer transition hover:scale-105 ${
                               prod.available !== false ? 'bg-emerald-100 text-emerald-800 border border-emerald-300' : 'bg-red-100 text-red-800 border border-red-300'
                             }`}
@@ -574,6 +611,7 @@ function AdminContent() {
                             onClick={() => {
                               if (confirm(`Are you sure you want to delete "${prod.title}"?`)) {
                                 deleteProduct(prod.id);
+                                showConfirmation(`Product "${prod.title}" deleted from catalog.`, 'danger');
                               }
                             }}
                             className="p-1.5 text-red-600 hover:bg-red-50 rounded transition"
@@ -778,8 +816,10 @@ function AdminContent() {
                       </button>
                       <button
                         onClick={() => {
+                          const updatedTitle = editingProd.title;
                           updateProduct(editingProd.id, editingProd);
                           setEditingProd(null);
+                          showConfirmation(`Product "${updatedTitle}" updated successfully! Changes saved globally.`);
                         }}
                         className="px-4 py-2 bg-[#383a7c] hover:bg-[#2c2e63] text-white rounded text-xs font-bold flex items-center gap-1.5 shadow-xs transition"
                       >
@@ -862,6 +902,7 @@ function AdminContent() {
                   <button
                     onClick={() => {
                       if (newPhoto.title && newPhoto.image) {
+                        const photoTitle = newPhoto.title;
                         addPhoto({
                           title: newPhoto.title || '',
                           category: newPhoto.category || 'Project Installation',
@@ -869,6 +910,7 @@ function AdminContent() {
                           description: newPhoto.description || ''
                         });
                         setIsAddPhotoOpen(false);
+                        showConfirmation(`Photo "${photoTitle}" added to gallery successfully!`);
                       }
                     }}
                     className="bg-emerald-600 text-white font-bold text-xs px-3 py-1.5 rounded"
@@ -888,8 +930,13 @@ function AdminContent() {
                     <p className="text-[11px] text-slate-500">{item.category}</p>
                   </div>
                   <button
-                    onClick={() => deletePhoto(item.id)}
-                    className="absolute top-2 right-2 bg-red-600 text-white p-1.5 rounded-full opacity-90 sm:opacity-0 group-hover:opacity-100 transition shadow-md"
+                    onClick={() => {
+                      if (confirm(`Delete photo "${item.title}"?`)) {
+                        deletePhoto(item.id);
+                        showConfirmation(`Photo removed from gallery.`, 'danger');
+                      }
+                    }}
+                    className="absolute top-2 right-2 bg-red-600 text-white p-1.5 rounded-full opacity-90 sm:opacity-0 group-hover:opacity-100 transition shadow-md cursor-pointer"
                     title="Delete Photo"
                   >
                     <Trash2 className="w-3.5 h-3.5" />
@@ -981,6 +1028,7 @@ function AdminContent() {
                   <button
                     onClick={() => {
                       if (newAdminReview.author && newAdminReview.comment) {
+                        const reviewAuthor = newAdminReview.author;
                         addTestimonial({
                           author: newAdminReview.author,
                           company: newAdminReview.company || 'Verified Client',
@@ -991,6 +1039,7 @@ function AdminContent() {
                           date: new Date().toLocaleDateString('en-US', { month: 'short', year: 'numeric' }),
                         });
                         setIsAddReviewOpen(false);
+                        showConfirmation(`Client review by "${reviewAuthor}" published successfully!`);
                         setNewAdminReview({
                           author: '',
                           company: '',
@@ -1018,7 +1067,16 @@ function AdminContent() {
                     <h3 className="font-bold text-xs text-slate-900">{t.author} - <span className="text-amber-600">{t.company}</span> ({t.rating} ★)</h3>
                     <p className="text-xs text-slate-600 mt-1">"{t.comment}"</p>
                   </div>
-                  <button onClick={() => deleteTestimonial(t.id)} className="text-red-600 hover:bg-red-50 p-2 rounded transition shrink-0">
+                  <button
+                    onClick={() => {
+                      if (confirm(`Delete review by "${t.author}"?`)) {
+                        deleteTestimonial(t.id);
+                        showConfirmation(`Review by "${t.author}" deleted successfully.`, 'danger');
+                      }
+                    }}
+                    className="text-red-600 hover:bg-red-50 p-2 rounded transition shrink-0 cursor-pointer"
+                    title="Delete Review"
+                  >
                     <Trash2 className="w-4 h-4" />
                   </button>
                 </div>
@@ -1179,11 +1237,17 @@ function AdminContent() {
               </div>
             </div>
 
-            <div className="flex justify-end pt-2 border-t border-slate-200">
+            <div className="flex flex-col sm:flex-row items-center justify-between gap-3 pt-2 border-t border-slate-200">
               <div className="flex items-center gap-1.5 text-xs text-emerald-700 font-bold bg-emerald-50 px-3 py-1.5 rounded-md border border-emerald-200">
                 <CheckCircle className="w-4 h-4 text-emerald-600" />
                 <span>Changes save automatically and reflect globally across the website</span>
               </div>
+              <button
+                onClick={() => showConfirmation("Company profile & About Us details saved and updated globally!")}
+                className="bg-[#383a7c] hover:bg-[#2c2e63] text-white font-bold text-xs px-5 py-2.5 rounded-lg shadow-sm transition flex items-center gap-1.5 cursor-pointer"
+              >
+                <Save className="w-4 h-4" /> Save Company Details
+              </button>
             </div>
           </div>
         )}
@@ -1235,8 +1299,13 @@ function AdminContent() {
                           <Calendar className="w-3.5 h-3.5" /> {inq.date}
                         </span>
                         <button
-                          onClick={() => deleteInquiry(inq.id)}
-                          className="text-red-600 hover:bg-red-50 p-1.5 rounded-lg transition"
+                          onClick={() => {
+                            if (confirm(`Delete lead entry for "${inq.name}"?`)) {
+                              deleteInquiry(inq.id);
+                              showConfirmation(`Lead entry for "${inq.name}" deleted.`, 'danger');
+                            }
+                          }}
+                          className="text-red-600 hover:bg-red-50 p-1.5 rounded-lg transition cursor-pointer"
                           title="Delete Lead"
                         >
                           <Trash2 className="w-4 h-4" />
